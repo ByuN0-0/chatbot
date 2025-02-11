@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>챗봇</title>
+  <!-- 외부 CSS 파일 링크 -->
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="container">
+  <h1>챗봇</h1>
+  <div id="chat-window"></div>
+  <div id="input-window">
+    <textarea id="user-input" placeholder="메시지를 입력하세요..."></textarea>
+    <button onclick="sendMessage()">보내기</button>
+  </div>
+</div>
+
+<script>
+  function sendMessage() {
+    const message = document.getElementById("user-input").value;
+    fetch('/chat', {
+        method: 'POST',
+        body: new URLSearchParams('message=' + message),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 메시지 추가
+        document.getElementById("chat-window").innerHTML += `<p class="user-msg">사용자: ${message}</p>`;
+        document.getElementById("chat-window").innerHTML += `<p class="bot-msg">봇: ${data.response}</p>`;
+        document.getElementById("user-input").value = '';
+        // 스크롤을 맨 아래로 이동
+        const chatWindow = document.getElementById("chat-window");
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+  }
+</script>
+</body>
+</html>
